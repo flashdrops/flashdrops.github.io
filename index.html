@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en" style="width: 100%; height: 100%;">
+    <head>
+        <title>FlashDrops Test Interface</title>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/js/all.min.js" integrity="sha256-qM7QTJSlvtPSxVRjVWNM2OfTAz/3k5ovHOKmKXuYMO4=" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="https://unpkg.com/web3@1.3.4/dist/web3.min.js"></script>
+        <script type="text/javascript" src="https://unpkg.com/web3modal@1.9.3/dist/index.js"></script>
+        <script type="text/javascript" src="https://unpkg.com/evm-chains@0.2.0/dist/umd/index.min.js"></script>
+        <script type="text/javascript" src="https://unpkg.com/@walletconnect/web3-provider@1.4.0/dist/umd/index.min.js"></script>
+        <script type="text/javascript" src="app.js"></script>
+    </head>
+    <body>
+        <!-- Modal -->
+        <div class="modal fade" id="modalWhitepaper" role="dialog">
+            <div class="modal-dialog">
+                  <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">FlashDrops</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Airdrops are fun!
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="modalWrongNetwork" role="dialog">
+            <div class="modal-dialog">
+                  <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">⚠️ Warning</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Your wallet is connected to the wrong network.<br/>
+                            Please connect to Binance Smart Chain (testnet).
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="modalCreateAirdrop" role="dialog">
+            <div class="modal-dialog">
+                  <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title"><i class="fas fa-cubes mr-2"></i>Create Airdrop</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label for="tokenSelection" style="margin-right: 2vh;">Token</label>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group form-inline">
+                                        <select onchange="toggleApprove();" class="form-control" id="tokenSelection" style="width: 59%; margin-right: 6%;">
+                                        </select>
+                                        <button
+                                            type="button" onclick="approve();" class="btn btn-danger"
+                                            style="width: 35%;" id="approve" disabled>
+                                            Approve
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">
+                                    <label for="tokenSupply" style="margin-right: 2vh;">Amount</label>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group form-inline">
+                                        <input
+                                            oninput="toggleApprove();"
+                                            class="form-control" type="number"
+                                            placeholder="1000" id="tokenSupply"
+                                            style="width: 100%;"
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">
+                                    <label for="claimSize" style="margin-right: 2vh;">Claim size (%)</label>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group form-inline">
+                                        <input
+                                            class="form-control" type="number"
+                                            placeholder="0.5" min="0.5" max="300000"
+                                            step="0.1" id="claimSize"
+                                            style="width: 100%;"
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group form-inline">
+                                        <span style="visibility: visible; font-size: 65%" id="txStatusCreateAirdrop"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <button id="btnCreateAirdrop" onclick="createAirdrop();" type="button" class="btn btn-primary btn-block">Create</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="modalAirdropCreated" role="dialog">
+            <div class="modal-dialog">
+                  <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Airdrop Created</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Success!!!</p>
+                        <p><img src="success.webp" style="max-width: 100%;"></img></p>
+                        <p><span id="airdropSuccess"></span></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="modalNoAirdrops" role="dialog">
+            <div class="modal-dialog">
+                  <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Oops!</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>There are no available airdrops at the moment.</p>
+                        <p><img src="sad.webp" style="max-width: 100%;"></img></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="modalSelectAirdrop" role="dialog">
+            <div class="modal-dialog">
+                  <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title"><i class="fas fa-parachute-box mr-2"></i>Select Airdrop</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group form-inline">
+                            <label for="airdropSelection" style="margin-right: 2vh;">Airdrop</label>
+                            <select class="form-control" id="airdropSelection" style="width: 62%; margin-right: 2vh;">
+                            </select>
+                            <button type="button" class="btn btn-primary" id="approve" onclick="openAirdropInteractionModal();">
+                                Select
+                            </button>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="modalAdminAirdrop" role="dialog">
+            <div class="modal-dialog">
+                  <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Admin Menu</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>NOT IMPLEMENTED YET!</strong></p>
+                        <p><i>TODO: The deployer may only claim the NFT once the airdrop ends.</i></p>
+                        <button
+                            type="button" class="btn btn-danger"
+                            id="btnEndAirdrop" onclick="endAirdrop();">
+                            End Airdrop
+                        </button>
+                        <button
+                            type="button" class="btn btn-primary" disabled
+                            id="btnMintNFT" onclick="openMintNFTModal();">
+                            Claim NFT
+                        </button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="modalAirdropInteraction" role="dialog">
+            <div class="modal-dialog">
+                  <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title"><i class="fas fa-parachute-box mr-2"></i>Claim Airdrop</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group form-inline">
+                            <span id="airdropPhase"></span>
+                        </div>
+                        <div class="form-group form-inline">
+                            <span id="userPhase"></span>
+                        </div>
+                        <div class="form-group form-inline"  id="divUserPendingValidations">
+                            <span id="userPendingValidations"></span>
+                        </div>
+                        <div class="form-group form-inline">
+                            <span style="visibility: visible; font-size: 65%" id="txStatusClaim"></span>
+                        </div>
+                        <button type="button" class="btn btn-default" id="btnOpenRegisterModal" onclick="openRegisterModal();">Register</button>
+                        <button type="button" class="btn btn-default" id="btnOpenValidateModal" onclick="openValidateModal();">Validate</button>
+                        <button type="button" class="btn btn-default" id="btnClaim" onclick="claim();">Claim</button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="modalRegister" role="dialog">
+            <div class="modal-dialog">
+                  <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title"><i class="fas fa-parachute-box mr-2"></i>Registration</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group form-inline">
+                            <span id="registrationMagicNumber"></span>&nbsp;
+                            <span id="registrationMagicNumberProgress"></span>
+                        </div>
+                        <div class="form-group form-inline">
+                            <span id="registrationTask"></span>
+                        </div>
+                        <div class="form-group form-inline">
+                            <input class="form-control" type="text" id="taskSolution" style="width: 100%;">
+                        </div>
+                        <div class="form-group form-inline">
+                            <span style="visibility: visible; font-size: 65%" id="txStatusRegister"></span>
+                        </div>
+                        <div class="form-group form-inline">
+                            <button onclick="register();" id="btnRegisterSubmit" type="button" class="btn btn-primary btn-block">Submit</button>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="modalValidate" role="dialog">
+            <div class="modal-dialog">
+                  <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title"><i class="fas fa-parachute-box mr-2"></i>Validate</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container" id="divPeerEvaluation" hidden=true>
+                            <div class="form-group form-inline" id="reviewAgreementQuestion">
+                                <span><strong>Do you agree with the following review?</strong></span>
+                            </div>
+                            <div class="form-group form-inline" id="divPeer0" hidden=true>
+                                <span id="peer0">pen, sky, horse: Writing a story about a flying unicorn - 🤖</span>
+                            </div>
+                            <div class="form-group form-inline" id="divPeer1" hidden=true>
+                                <span id="peer1">pen, sky, horse: Writing a story about a flying unicorn - 🧑</span>
+                            </div>
+                            <div class="form-group form-inline" id="divPeer2" hidden=true>
+                                <span id="peer2">pen, sky, horse: Writing a story about a flying unicorn - 🧑</span>
+                            </div>
+                            <div class="form-group form-inline" id="divPeer3" hidden=true>
+                                <span id="peer3">pen, sky, horse: Writing a story about a flying unicorn - 🤖</span>
+                            </div>
+                            <div class="form-group form-inline" id="divPeer4" hidden=true>
+                                <span id="peer4">pen, sky, horse: Writing a story about a flying unicorn - 🧑</span>
+                            </div>
+                            <div class="btn-toolbar">
+                               <button type="button" id="btnPeerReviewPASS" onclick="evalPeerReview(1);" class="btn btn-success btn-block">I agree</button>
+                               <button type="button" id="btnPeerReviewFAIL" onclick="evalPeerReview(0);" class="btn btn-danger btn-block">I disagree</button>
+                           </div>
+                            <hr/>
+                        </div>
+                        <div class="container">
+                            <div class="form-group form-inline">
+                                <span><strong>Do you think this sentence was written by a human?</strong></span>
+                            </div>
+                            <div class="form-group form-inline">
+                                <span id="myPeer">
+                                    pen, sky, horse: Writing a story about a flying unicorn<br/>
+                                </span>
+                            </div>
+                            <div class="btn-toolbar">
+                                <button type="button" id="btnPeerSolutionPASS" onclick="evalPeerSolution(1);" class="btn btn-success btn-block">🧑 Yes</button>
+                                <button type="button" id="btnPeerSolutionFAIL" onclick="evalPeerSolution(0);" class="btn btn-danger btn-block">🤖 No</button>
+                            </div>
+                            <div class="form-group form-inline">
+                            </div>
+                            <div class="form-group form-inline">
+                                <span style="visibility: visible; font-size: 65%" id="txStatusValidate"></span>
+                            </div>
+                            <div class="form-group form-inline">
+                                <button
+                                    onclick="nextPeer();" id="btnNextPeer" type="button"
+                                    class="btn btn-primary btn-block">Next
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Main Page -->
+        <div align="center" style="top: 5vh; position: relative;">
+            <h1 class="text-light" align="center">FlashDrops</h1>
+            <h6 class="text-light" align="center">Testnet Interface</h6>
+            <img class="swing" src="logo.png" alt="meow..." style="max-width: 40%; display: block; margin-bottom: 3vh; margin-top: 3vh;"/>
+
+            <div id="status" style="margin-bottom: 3vh;">
+                <h6 class="text-light" align="center" style="display: none;" id="balance"></h6>
+                <h6 class="text-light" align="center" style="display: none;" id="airdrop"></h6>
+            </div>
+
+            <div class="btn-group mt-2 mb-4" role="group" aria-label="actionButtons">
+                <a href="javascript:void(0);" onclick="connectWallet();" class="d-block btn btn-outline-light">
+                    <i class="fas fa-link mr-2"></i><span id="connect">Connect</span>
+                </a>
+
+                <a href="javascript:void(0);" onclick="openCreateAirdropModal();" id="create" class="d-none btn btn-outline-light">
+                    <i class="fas fa-cubes mr-2"></i>Create
+                </a>
+
+                <a href="javascript:void(0);" onclick="openSelectAirdropModal();" class="d-none btn btn-outline-light" id="claim">
+                    <i class="fas fa-parachute-box mr-2"></i>Claim
+                </a>
+
+                <a href="#modalAdminAirdrop" class="d-block btn btn-outline-light" data-toggle="modal">
+                    <i class="fas fa-graduation-cap mr-2"></i>Whitepaper
+                </a>
+                <a href="" target="_blank" class="d-block btn btn-outline-light">
+                    <i class="fas fa-code mr-2"></i>Contract
+                </a>
+            </div>
+
+            <h6 class="text-light small font-weight-bold">
+                <i class="fa fa-cog mr-2"></i>2021 Teenage Mutant Crypto Ninjas</h6>
+        </div>
+        <div style="height: 50px"></div>
+    </body>
+    <script type="text/javascript">main();</script>
+</html>
